@@ -2,9 +2,7 @@ package cn.liuyiyou.blog.model.Vo;
 
 import java.io.Serializable;
 
-/**
- * @author 
- */
+
 public class AttachVo implements Serializable {
     private Integer id;
 

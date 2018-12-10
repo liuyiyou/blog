@@ -48,22 +48,20 @@ public class BaseInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String contextPath = request.getContextPath();
-        // System.out.println(contextPath);
         String uri = request.getRequestURI();
-
         LOGGE.info("UserAgent: {}", request.getHeader(USER_AGENT));
         LOGGE.info("用户访问地址: {}, 来路地址: {}", uri, IPKit.getIpAddrByRequest(request));
-
-
         //请求拦截处理
         UserVo user = TaleUtils.getLoginUser(request);
         if (null == user) {
             Integer uid = TaleUtils.getCookieUid(request);
             if (null != uid) {
-                //这里还是有安全隐患,cookie是可以伪造的
                 user = userService.queryUserById(uid);
                 request.getSession().setAttribute(WebConst.LOGIN_SESSION_KEY, user);
             }
+        }
+        if(uri.endsWith(".js") || uri.endsWith(".images")){
+            return true;
         }
         if (uri.startsWith(contextPath + "/admin") && !uri.startsWith(contextPath + "/admin/login") && null == user) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
@@ -86,7 +84,6 @@ public class BaseInterceptor implements HandlerInterceptor {
         httpServletRequest.setAttribute("option", ov);
         httpServletRequest.setAttribute("adminCommons", adminCommons);
     }
-
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
 
